@@ -4,6 +4,7 @@ plugins {
 
 subprojects {
     apply { plugin("java") }
+    apply { plugin("java-library") }
 
     group = "io.github.tofpu"
     version = "0.0.0-SNAPSHOT"
