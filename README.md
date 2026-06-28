@@ -1,3 +1,3 @@
 # Vertex Link
 
-A local-first configuration synchronization engine framework.
+A local-first synchronization engine framework written in Java.
