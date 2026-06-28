@@ -17,6 +17,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.UUID;
 
+import static io.github.tofpu.vertexlink.util.ConversionUtil.resolveToUUID;
+
 public class VertexLinkService<T extends TelemetryPayload> extends VertexLinkServiceGrpc.VertexLinkServiceImplBase implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(VertexLinkService.class);
     private final GrpcDataAdapter<T> dataAdapter;
@@ -29,7 +31,7 @@ public class VertexLinkService<T extends TelemetryPayload> extends VertexLinkSer
 
     @Override
     public void uploadTelemetry(TelemetryPayloadData request, StreamObserver<Empty> responseObserver) {
-        UUID nodeId = resolveToUUID(request.getNodeId());
+        UUID nodeId = resolveToUUID(request.getNodeId().toByteArray());
         T data = dataAdapter.deserialize(request);
         log.info("[{}] Received Telemetry Payload: {}", nodeId, data);
 
@@ -38,10 +40,6 @@ public class VertexLinkService<T extends TelemetryPayload> extends VertexLinkSer
 
         responseObserver.onNext(Empty.newBuilder().build());
         responseObserver.onCompleted();
-    }
-
-    private UUID resolveToUUID(ByteString nodeId) {
-        return UUID.nameUUIDFromBytes(nodeId.toByteArray());
     }
 
     @Override
