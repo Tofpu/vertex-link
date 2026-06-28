@@ -9,4 +9,4 @@ A local-first synchronization engine framework written in Java in the context of
 - **Serialization**: `Protobuf 3` were used to serialize data objects during usage of RPC and Redis.
 - **Durability**:
   - Edge node: `MVStore` were used to store telemetries in disk in an event that it cannot communicate to the central server. Once a connection is restablished, the telemetries stored in disk are sent over and removed from disk.
-  - Central server: `Redis` were used to asynchronizely store incoming telemetries objects from the edge node to a stack. Additionally, a dedicated thread is used to poll telemtries stored in Redis and set the latest telemetry for each given node.
+  - Central server: `Redis` were used to asynchronizely store incoming telemetries objects from the edge node to a stack. Additionally, a dedicated thread is used to poll telemetries stored in Redis and set the latest telemetry for each given node.
