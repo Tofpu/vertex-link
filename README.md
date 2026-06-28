@@ -2,6 +2,8 @@
 
 A local-first synchronization engine framework written in Java in the context of an imaginary industrial telemetry system.
 
+> **Transparency disclaimer**: This project is based on an interview project challenge by Gemini. During the development of this project, Gemini were only used to ask clarifying questions which is meant to mimick a real interview. AI were not used to generate code (aside from generating default logback.xml file). 
+
 ## Technology used:
 - **Communication**: `RPC (gRPC)` is used to facilitate the communication from the edge-node(s) to the central-server.
 - **Serialization**: `Protobuf 3` is used to serialize data objects in the context of RPC and Redis.
