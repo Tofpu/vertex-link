@@ -6,7 +6,7 @@ A local-first synchronization engine written in Java in the context of an __imag
 
 ## Capabilities:
 - The registration of edge nodes to the central server on boot.
-  - The registration request is validated prior to acceptance by sending a ping request via gRPC to the given edge node to confirm the validity of the address.
+  - The registration request is validated prior to acceptance by sending a ping request via gRPC to the given edge node to confirm the validity of the provided address (host:port).
 - The transmission of incoming telemetry from edge nodes to the central server.
   - If the connection from the edge node to the central server were severed, the telemetry are written to disk until the connection is reinstated.
 
