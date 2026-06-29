@@ -1,11 +1,16 @@
 package io.github.tofpu.vertexlink.grpc;
 
 import com.google.protobuf.ByteString;
+import io.github.tofpu.vertexlink.protos.NodeRegistrationRequest;
+import io.github.tofpu.vertexlink.protos.NodeRegistrationResponse;
 import io.github.tofpu.vertexlink.protos.TelemetryPayloadData;
 import io.github.tofpu.vertexlink.protos.VertexLinkServiceGrpc;
 import io.github.tofpu.vertexlink.telemetry.TelemetryPayload;
+import io.github.tofpu.vertexlink.util.ConversionUtil;
 import io.github.tofpu.vertexlink.util.grpc.AbstractClient;
 import io.grpc.StatusRuntimeException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
@@ -13,11 +18,28 @@ public class VertexLinkClient<T extends TelemetryPayload> extends AbstractClient
         VertexLinkServiceGrpc.VertexLinkServiceBlockingStub,
         VertexLinkServiceGrpc.VertexLinkServiceStub
         > {
+    private static final Logger log = LoggerFactory.getLogger(VertexLinkClient.class);
     private final GrpcDataAdapter<T> grpcDataAdapter;
 
     public VertexLinkClient(String host, int port, GrpcDataAdapter<T> grpcDataAdapter) {
         super(host, port, VertexLinkServiceGrpc::newBlockingStub, VertexLinkServiceGrpc::newStub);
         this.grpcDataAdapter = grpcDataAdapter;
+    }
+
+    public NodeRegistrationResult registerEdgeNode(UUID nodeId, String host, int port) {
+        log.info("Attempting to register this edge node ({}:{}) in the central server", host, port);
+        NodeRegistrationRequest request = NodeRegistrationRequest.newBuilder()
+                .setId(ByteString.copyFrom(ConversionUtil.convertUUIDtoBytes(nodeId)))
+                .setHost(host)
+                .setPort(port)
+                .build();
+        NodeRegistrationResponse response = blockingStub.registerEdgeNode(request);
+        if (!response.getSuccess()) {
+            log.info("Failed to register this node in the central server. ErrorType={}", response.getErrorType());
+            return NodeRegistrationResult.FAILURE;
+        }
+        log.info("Successfully registered this node in the central server");
+        return NodeRegistrationResult.SUCCESS;
     }
 
     /**
