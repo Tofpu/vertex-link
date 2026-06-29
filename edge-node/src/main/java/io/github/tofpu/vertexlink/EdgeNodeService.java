@@ -3,12 +3,14 @@ package io.github.tofpu.vertexlink;
 import io.github.tofpu.vertexlink.grpc.ConnectionSettings;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
 import io.github.tofpu.vertexlink.grpc.VertexLinkClient;
+import io.github.tofpu.vertexlink.grpc.server.VertexLinkNodeService;
 import io.github.tofpu.vertexlink.logging.impl.MVMapSensorDataLogger;
 import io.github.tofpu.vertexlink.logging.impl.MVStoreSensorDataLoggerFactory;
 import io.github.tofpu.vertexlink.poller.TelemetryPoller;
 import io.github.tofpu.vertexlink.telemetry.SensorDataAdapter;
 import io.github.tofpu.vertexlink.telemetry.SensorDataIngestor;
 import io.github.tofpu.vertexlink.telemetry.TelemetryPayload;
+import io.github.tofpu.vertexlink.util.grpc.SimpleServer;
 import org.h2.mvstore.MVMap;
 import org.h2.mvstore.MVStore;
 import org.h2.mvstore.MVStoreTool;
@@ -17,6 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Closeable;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -24,12 +27,14 @@ import java.util.UUID;
 public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(EdgeNodeService.class);
     private static final String MVSTORE_FILE_PATH_IN_STRING = new File("data.db").getAbsolutePath();
+    public static final int LOCAL_GRPC_PORT = 5001;
 
     private final UUID nodeId;
     private final VertexLinkClient<T> vertexLinkClient;
     private final SensorDataAdapter<T> sensorDataAdapter;
     private final MVStore mvStore;
     private final TelemetryPoller<T> telemetryPoller;
+    private final SimpleServer<VertexLinkNodeService> server;
 
     public EdgeNodeService(
             UUID nodeId,
@@ -51,11 +56,27 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
         this.telemetryPoller = new TelemetryPoller<>(
                 sensorDataIngestor, telemetryPollerSettings // 10 times per sec
         );
+
+        this.server = new SimpleServer<>(
+                LOCAL_GRPC_PORT, new VertexLinkNodeService()
+        );
     }
 
     public void initialize() {
         log.info("Node id = {}", nodeId);
+        startNodeRCPServer();
+        initializeTelemetryLogger();
+    }
 
+    private void startNodeRCPServer() {
+        try {
+            this.server.start();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    private void initializeTelemetryLogger() {
         var loggerFactory = new MVStoreSensorDataLoggerFactory<>(
                 sensorDataAdapter, mvStore
         );
