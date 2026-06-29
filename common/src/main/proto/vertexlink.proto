@@ -9,6 +9,23 @@ option java_outer_classname = "VertexLinkProtos";
 import "google/protobuf/empty.proto";
 import "google/protobuf/timestamp.proto";
 
+message NodeRegistrationRequest {
+  bytes id = 1; // node's id
+  string host = 2; // node's address
+  int32 port = 3; // node's port
+}
+
+message NodeRegistrationResponse {
+  bool success = 1; // true if central server succeeded in registering this node
+  optional ErrorType error_type = 2; // if failed, type of error central server encountered while registering this node
+}
+
+enum ErrorType {
+  UNREACHABLE_ADDRESS = 0;
+  CLIENT_ALREADY_EXISTS = 1;
+  UNFAMILIAR_ERROR = 2;
+}
+
 message TelemetryPayloadData {
   bytes node_id = 1;
   int64 id = 2;
@@ -18,5 +35,6 @@ message TelemetryPayloadData {
 }
 
 service VertexLinkService {
+  rpc RegisterEdgeNode(NodeRegistrationRequest) returns (NodeRegistrationResponse) {}
   rpc UploadTelemetry(TelemetryPayloadData) returns (google.protobuf.Empty) {}
 }
