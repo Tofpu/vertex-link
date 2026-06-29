@@ -1,4 +1,4 @@
-package io.github.tofpu.vertexlink.grpc;
+package io.github.tofpu.vertexlink.grpc.client;
 
 public enum NodeRegistrationResult {
     SUCCESS(true),

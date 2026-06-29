@@ -1,9 +1,9 @@
 package io.github.tofpu.vertexlink;
 
-import io.github.tofpu.vertexlink.grpc.ConnectionSettings;
+import io.github.tofpu.vertexlink.grpc.server.ConnectionSettings;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
-import io.github.tofpu.vertexlink.grpc.NodeRegistrationResult;
-import io.github.tofpu.vertexlink.grpc.VertexLinkClient;
+import io.github.tofpu.vertexlink.grpc.client.NodeRegistrationResult;
+import io.github.tofpu.vertexlink.grpc.client.VertexLinkClient;
 import io.github.tofpu.vertexlink.grpc.server.VertexLinkNodeService;
 import io.github.tofpu.vertexlink.logging.impl.MVMapSensorDataLogger;
 import io.github.tofpu.vertexlink.logging.impl.MVStoreSensorDataLoggerFactory;

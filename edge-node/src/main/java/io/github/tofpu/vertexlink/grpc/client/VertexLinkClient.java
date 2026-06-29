@@ -1,6 +1,7 @@
-package io.github.tofpu.vertexlink.grpc;
+package io.github.tofpu.vertexlink.grpc.client;
 
 import com.google.protobuf.ByteString;
+import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
 import io.github.tofpu.vertexlink.protos.NodeRegistrationRequest;
 import io.github.tofpu.vertexlink.protos.NodeRegistrationResponse;
 import io.github.tofpu.vertexlink.protos.TelemetryPayloadData;

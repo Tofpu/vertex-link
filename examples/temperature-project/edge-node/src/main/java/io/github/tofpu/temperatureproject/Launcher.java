@@ -1,7 +1,7 @@
 package io.github.tofpu.temperatureproject;
 
 import io.github.tofpu.vertexlink.EdgeNodeService;
-import io.github.tofpu.vertexlink.grpc.ConnectionSettings;
+import io.github.tofpu.vertexlink.grpc.server.ConnectionSettings;
 import io.github.tofpu.vertexlink.poller.TelemetryPoller;
 
 import java.util.UUID;
