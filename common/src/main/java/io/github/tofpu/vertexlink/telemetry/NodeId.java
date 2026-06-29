@@ -8,4 +8,9 @@ public record NodeId(
     public static NodeId wrap(UUID uuid) {
         return new NodeId(uuid);
     }
+
+    @Override
+    public String toString() {
+        return uuid.toString();
+    }
 }
