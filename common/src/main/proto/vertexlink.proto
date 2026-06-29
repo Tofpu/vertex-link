@@ -38,3 +38,10 @@ service VertexLinkService {
   rpc RegisterEdgeNode(NodeRegistrationRequest) returns (NodeRegistrationResponse) {}
   rpc UploadTelemetry(TelemetryPayloadData) returns (google.protobuf.Empty) {}
 }
+enum ValueType {
+  BOOLEAN = 0;
+}
+
+service VertexLinkNodeService {
+  rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+}
