@@ -1,15 +1,18 @@
 package io.github.tofpu.vertexlink.grpc;
 
-import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
 import io.github.tofpu.vertexlink.Constants;
-import io.github.tofpu.vertexlink.protos.TelemetryPayloadData;
-import io.github.tofpu.vertexlink.protos.VertexLinkServiceGrpc;
+import io.github.tofpu.vertexlink.node.NodeConnectionHandler;
+import io.github.tofpu.vertexlink.node.NodeRegistrationResult;
+import io.github.tofpu.vertexlink.protos.*;
 import io.github.tofpu.vertexlink.redis.RedisHandler;
+import io.github.tofpu.vertexlink.telemetry.NodeId;
 import io.github.tofpu.vertexlink.telemetry.TelemetryPayload;
+import io.github.tofpu.vertexlink.util.ConversionUtil;
 import io.grpc.stub.StreamObserver;
 import io.lettuce.core.api.StatefulRedisConnection;
 import io.lettuce.core.api.async.RedisAsyncCommands;
+import org.jspecify.annotations.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,9 +27,48 @@ public class VertexLinkService<T extends TelemetryPayload> extends VertexLinkSer
     private final GrpcDataAdapter<T> dataAdapter;
     private final StatefulRedisConnection<byte[], byte[]> connection;
 
-    public VertexLinkService(GrpcDataAdapter<T> dataAdapter, RedisHandler redisHandler) {
+    private final NodeConnectionHandler nodeConnectionHandler;
+
+    public VertexLinkService(GrpcDataAdapter<T> dataAdapter, RedisHandler redisHandler, NodeConnectionHandler nodeConnectionHandler) {
         this.dataAdapter = dataAdapter;
         this.connection = redisHandler.getConnectionAsByteArray();
+        this.nodeConnectionHandler = nodeConnectionHandler;
+    }
+
+    @Override
+    public void registerEdgeNode(NodeRegistrationRequest request, StreamObserver<NodeRegistrationResponse> responseObserver) {
+        log.info("Received request: {}", request);
+        NodeId nodeId = ConversionUtil.convertToNodeId(request.getId().toByteArray());
+        NodeRegistrationResult registrationResult = nodeConnectionHandler.validateAndRegisterNode(
+                nodeId,
+                request.getHost(),
+                request.getPort()
+        );
+
+        NodeRegistrationResponse.Builder responseBuilder = NodeRegistrationResponse.newBuilder()
+                .setSuccess(registrationResult.success());
+
+        if (!registrationResult.success()) {
+            ErrorType errorType = resolveErrorType(registrationResult);
+            responseBuilder = responseBuilder.setErrorType(errorType);
+        }
+
+        responseObserver.onNext(responseBuilder.build());
+        responseObserver.onCompleted();
+    }
+
+    private static @NonNull ErrorType resolveErrorType(NodeRegistrationResult registrationResult) {
+        ErrorType errorType;
+        if (registrationResult == NodeRegistrationResult.UNREACHABLE_ADDRESS) {
+            errorType = ErrorType.UNREACHABLE_ADDRESS;
+        } else if (registrationResult == NodeRegistrationResult.CLIENT_ALREADY_EXISTS) {
+            errorType = ErrorType.CLIENT_ALREADY_EXISTS;
+        } else if (registrationResult == NodeRegistrationResult.UNFAMILIAR_ERROR) {
+            errorType = ErrorType.UNFAMILIAR_ERROR;
+        } else {
+            throw new IllegalStateException("Unknown registration result: " + registrationResult);
+        }
+        return errorType;
     }
 
     @Override
