@@ -1,6 +1,6 @@
 # Vertex Link
 
-A local-first synchronization engine written in Java in the context of a __theoretical industrial telemetry system__.
+A local-first synchronization engine written in Java, designed to prototype an industrial edge-to-cloud telemetry architecture.
 
 > ⚠️**Transparency disclaimer**: This project is based on an interview challenge provided by Gemini. The technologies used throughout the project were dictated by Gemini (aside from `MVStore` by H2 and other trival dependencies). Furthermore, during the development of this project, Gemini were only used to ask clarifying questions which is meant to mimick a real interview. They were not used to generate code (aside from generating default logback.xml file). They also also used for interface name suggestions (`Ingest` suffix, etc). 
 
