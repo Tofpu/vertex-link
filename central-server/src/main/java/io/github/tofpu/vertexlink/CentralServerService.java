@@ -24,8 +24,8 @@ public class CentralServerService<T extends TelemetryPayload> implements Closeab
             RPCConnectionSettings rpcConnectionSettings,
             GrpcDataAdapter<T> grpcDataAdapter
     ) {
-        RedisHandler redisHandler = new RedisHandler(redisConnectionSettings.host(), redisConnectionSettings.port());
-        TelemetryRegistry<T> telemetryRegistry = new TelemetryRegistry<>();
+        var redisHandler = new RedisHandler(redisConnectionSettings.host(), redisConnectionSettings.port());
+        var telemetryRegistry = new TelemetryRegistry<T>();
         this.telemetryProcessor = new TelemetryProcessor<>(
                 grpcDataAdapter,
                 redisHandler,
