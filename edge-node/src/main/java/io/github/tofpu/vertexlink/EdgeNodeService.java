@@ -2,6 +2,7 @@ package io.github.tofpu.vertexlink;
 
 import io.github.tofpu.vertexlink.grpc.ConnectionSettings;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
+import io.github.tofpu.vertexlink.grpc.NodeRegistrationResult;
 import io.github.tofpu.vertexlink.grpc.VertexLinkClient;
 import io.github.tofpu.vertexlink.grpc.server.VertexLinkNodeService;
 import io.github.tofpu.vertexlink.logging.impl.MVMapSensorDataLogger;
@@ -65,6 +66,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
     public void initialize() {
         log.info("Node id = {}", nodeId);
         startNodeRCPServer();
+        tryToRegisterThisNodeToCentralServer();
         initializeTelemetryLogger();
     }
 
@@ -73,6 +75,14 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
             this.server.start();
         } catch (IOException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private void tryToRegisterThisNodeToCentralServer() {
+        // todo grab public address of this node
+        NodeRegistrationResult nodeRegistrationResult = vertexLinkClient.registerEdgeNode(nodeId, "localhost", LOCAL_GRPC_PORT);
+        if (!nodeRegistrationResult.success()) {
+            throw new IllegalStateException("Failed to register the node with id " + nodeId);
         }
     }
 
