@@ -1,7 +1,8 @@
-package io.github.tofpu.vertexlink.grpc;
+package io.github.tofpu.vertexlink.grpc.server;
 
 import com.google.protobuf.Empty;
 import io.github.tofpu.vertexlink.Constants;
+import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
 import io.github.tofpu.vertexlink.node.NodeConnectionHandler;
 import io.github.tofpu.vertexlink.node.NodeRegistrationResult;
 import io.github.tofpu.vertexlink.protos.*;

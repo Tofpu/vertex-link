@@ -1,7 +1,7 @@
 package io.github.tofpu.temperatureproject;
 
 import io.github.tofpu.vertexlink.CentralServerService;
-import io.github.tofpu.vertexlink.grpc.RPCConnectionSettings;
+import io.github.tofpu.vertexlink.grpc.server.RPCConnectionSettings;
 import io.github.tofpu.vertexlink.redis.RedisConnectionSettings;
 
 import java.io.IOException;

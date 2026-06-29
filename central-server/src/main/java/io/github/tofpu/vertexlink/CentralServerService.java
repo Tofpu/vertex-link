@@ -1,8 +1,8 @@
 package io.github.tofpu.vertexlink;
 
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
-import io.github.tofpu.vertexlink.grpc.RPCConnectionSettings;
-import io.github.tofpu.vertexlink.grpc.VertexLinkService;
+import io.github.tofpu.vertexlink.grpc.server.RPCConnectionSettings;
+import io.github.tofpu.vertexlink.grpc.server.VertexLinkService;
 import io.github.tofpu.vertexlink.node.NodeClientRegistry;
 import io.github.tofpu.vertexlink.node.NodeConnectionHandler;
 import io.github.tofpu.vertexlink.redis.RedisConnectionSettings;
