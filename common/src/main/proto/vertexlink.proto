@@ -34,7 +34,7 @@ message TelemetryPayloadData {
   bytes data = 4;
 }
 
-service VertexLinkService {
+service CentralServerService {
   rpc RegisterEdgeNode(NodeRegistrationRequest) returns (NodeRegistrationResponse) {}
   rpc UploadTelemetry(TelemetryPayloadData) returns (google.protobuf.Empty) {}
 }
@@ -42,6 +42,6 @@ enum ValueType {
   BOOLEAN = 0;
 }
 
-service VertexLinkNodeService {
+service EdgeNodeService {
   rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {}
 }

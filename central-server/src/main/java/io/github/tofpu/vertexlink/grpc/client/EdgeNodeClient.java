@@ -1,22 +1,22 @@
 package io.github.tofpu.vertexlink.grpc.client;
 
 import com.google.protobuf.Empty;
-import io.github.tofpu.vertexlink.protos.VertexLinkNodeServiceGrpc;
+import io.github.tofpu.vertexlink.protos.EdgeNodeServiceGrpc;
 import io.github.tofpu.vertexlink.util.grpc.AbstractClient;
 import io.grpc.StatusRuntimeException;
 
-import static io.github.tofpu.vertexlink.protos.VertexLinkNodeServiceGrpc.VertexLinkNodeServiceBlockingStub;
-import static io.github.tofpu.vertexlink.protos.VertexLinkNodeServiceGrpc.VertexLinkNodeServiceStub;
+import static io.github.tofpu.vertexlink.protos.EdgeNodeServiceGrpc.EdgeNodeServiceBlockingStub;
+import static io.github.tofpu.vertexlink.protos.EdgeNodeServiceGrpc.EdgeNodeServiceStub;
 
 public class EdgeNodeClient extends AbstractClient<
-        VertexLinkNodeServiceBlockingStub,
-        VertexLinkNodeServiceStub> {
+        EdgeNodeServiceBlockingStub,
+        EdgeNodeServiceStub> {
     public EdgeNodeClient(String host, int port) {
         super(
                 host,
                 port,
-                VertexLinkNodeServiceGrpc::newBlockingStub,
-                VertexLinkNodeServiceGrpc::newStub
+                EdgeNodeServiceGrpc::newBlockingStub,
+                EdgeNodeServiceGrpc::newStub
         );
     }
 

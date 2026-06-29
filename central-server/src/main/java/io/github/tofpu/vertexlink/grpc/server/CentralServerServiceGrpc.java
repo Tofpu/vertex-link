@@ -23,14 +23,14 @@ import java.util.UUID;
 
 import static io.github.tofpu.vertexlink.util.ConversionUtil.resolveToUUID;
 
-public class VertexLinkService<T extends TelemetryPayload> extends VertexLinkServiceGrpc.VertexLinkServiceImplBase implements Closeable {
-    private static final Logger log = LoggerFactory.getLogger(VertexLinkService.class);
+public class CentralServerServiceGrpc<T extends TelemetryPayload> extends io.github.tofpu.vertexlink.protos.CentralServerServiceGrpc.CentralServerServiceImplBase implements Closeable {
+    private static final Logger log = LoggerFactory.getLogger(CentralServerServiceGrpc.class);
     private final GrpcDataAdapter<T> dataAdapter;
     private final StatefulRedisConnection<byte[], byte[]> connection;
 
     private final NodeConnectionHandler nodeConnectionHandler;
 
-    public VertexLinkService(GrpcDataAdapter<T> dataAdapter, RedisHandler redisHandler, NodeConnectionHandler nodeConnectionHandler) {
+    public CentralServerServiceGrpc(GrpcDataAdapter<T> dataAdapter, RedisHandler redisHandler, NodeConnectionHandler nodeConnectionHandler) {
         this.dataAdapter = dataAdapter;
         this.connection = redisHandler.getConnectionAsByteArray();
         this.nodeConnectionHandler = nodeConnectionHandler;

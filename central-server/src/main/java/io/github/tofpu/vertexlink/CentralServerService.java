@@ -2,7 +2,7 @@ package io.github.tofpu.vertexlink;
 
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
 import io.github.tofpu.vertexlink.grpc.server.RPCConnectionSettings;
-import io.github.tofpu.vertexlink.grpc.server.VertexLinkService;
+import io.github.tofpu.vertexlink.grpc.server.CentralServerServiceGrpc;
 import io.github.tofpu.vertexlink.node.NodeClientRegistry;
 import io.github.tofpu.vertexlink.node.NodeConnectionHandler;
 import io.github.tofpu.vertexlink.redis.RedisConnectionSettings;
@@ -17,7 +17,7 @@ import java.io.IOException;
 
 public class CentralServerService<T extends TelemetryPayload> implements Closeable {
     private final TelemetryProcessor<T> telemetryProcessor;
-    private final SimpleServer<VertexLinkService<T>> server;
+    private final SimpleServer<CentralServerServiceGrpc<T>> server;
 
     public CentralServerService(
             RedisConnectionSettings redisConnectionSettings,
@@ -36,7 +36,7 @@ public class CentralServerService<T extends TelemetryPayload> implements Closeab
                 new NodeClientRegistry()
         );
 
-        var vertexLinkService = new VertexLinkService<>(
+        var vertexLinkService = new CentralServerServiceGrpc<>(
                 grpcDataAdapter,
                 redisHandler,
                 nodeConnectionHandler

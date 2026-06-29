@@ -2,10 +2,10 @@ package io.github.tofpu.vertexlink.grpc.client;
 
 import com.google.protobuf.ByteString;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
+import io.github.tofpu.vertexlink.protos.CentralServerServiceGrpc;
 import io.github.tofpu.vertexlink.protos.NodeRegistrationRequest;
 import io.github.tofpu.vertexlink.protos.NodeRegistrationResponse;
 import io.github.tofpu.vertexlink.protos.TelemetryPayloadData;
-import io.github.tofpu.vertexlink.protos.VertexLinkServiceGrpc;
 import io.github.tofpu.vertexlink.telemetry.TelemetryPayload;
 import io.github.tofpu.vertexlink.util.ConversionUtil;
 import io.github.tofpu.vertexlink.util.grpc.AbstractClient;
@@ -15,15 +15,15 @@ import org.slf4j.LoggerFactory;
 
 import java.util.UUID;
 
-public class VertexLinkClient<T extends TelemetryPayload> extends AbstractClient<
-        VertexLinkServiceGrpc.VertexLinkServiceBlockingStub,
-        VertexLinkServiceGrpc.VertexLinkServiceStub
+public class CentralServerClient<T extends TelemetryPayload> extends AbstractClient<
+        CentralServerServiceGrpc.CentralServerServiceBlockingStub,
+        CentralServerServiceGrpc.CentralServerServiceStub
         > {
-    private static final Logger log = LoggerFactory.getLogger(VertexLinkClient.class);
+    private static final Logger log = LoggerFactory.getLogger(CentralServerClient.class);
     private final GrpcDataAdapter<T> grpcDataAdapter;
 
-    public VertexLinkClient(String host, int port, GrpcDataAdapter<T> grpcDataAdapter) {
-        super(host, port, VertexLinkServiceGrpc::newBlockingStub, VertexLinkServiceGrpc::newStub);
+    public CentralServerClient(String host, int port, GrpcDataAdapter<T> grpcDataAdapter) {
+        super(host, port, CentralServerServiceGrpc::newBlockingStub, CentralServerServiceGrpc::newStub);
         this.grpcDataAdapter = grpcDataAdapter;
     }
 

@@ -3,8 +3,8 @@ package io.github.tofpu.vertexlink;
 import io.github.tofpu.vertexlink.grpc.server.ConnectionSettings;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
 import io.github.tofpu.vertexlink.grpc.client.NodeRegistrationResult;
-import io.github.tofpu.vertexlink.grpc.client.VertexLinkClient;
-import io.github.tofpu.vertexlink.grpc.server.VertexLinkNodeService;
+import io.github.tofpu.vertexlink.grpc.client.CentralServerClient;
+import io.github.tofpu.vertexlink.grpc.server.EdgeNodeServiceGrpc;
 import io.github.tofpu.vertexlink.logging.impl.MVMapSensorDataLogger;
 import io.github.tofpu.vertexlink.logging.impl.MVStoreSensorDataLoggerFactory;
 import io.github.tofpu.vertexlink.poller.TelemetryPoller;
@@ -31,11 +31,11 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
     public static final int LOCAL_GRPC_PORT = 5001;
 
     private final UUID nodeId;
-    private final VertexLinkClient<T> vertexLinkClient;
+    private final CentralServerClient<T> centralServerClient;
     private final SensorDataAdapter<T> sensorDataAdapter;
     private final MVStore mvStore;
     private final TelemetryPoller<T> telemetryPoller;
-    private final SimpleServer<VertexLinkNodeService> server;
+    private final SimpleServer<EdgeNodeServiceGrpc> server;
 
     public EdgeNodeService(
             UUID nodeId,
@@ -46,7 +46,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
             TelemetryPoller.Settings telemetryPollerSettings
     ) {
         this.nodeId = nodeId;
-        this.vertexLinkClient = new VertexLinkClient<>(
+        this.centralServerClient = new CentralServerClient<>(
                 connectionSettings.host(), connectionSettings.port(), grpcDataAdapter
         );
         this.sensorDataAdapter = sensorDataAdapter;
@@ -59,7 +59,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
         );
 
         this.server = new SimpleServer<>(
-                LOCAL_GRPC_PORT, new VertexLinkNodeService()
+                LOCAL_GRPC_PORT, new EdgeNodeServiceGrpc()
         );
     }
 
@@ -80,7 +80,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
 
     private void tryToRegisterThisNodeToCentralServer() {
         // todo grab public address of this node
-        NodeRegistrationResult nodeRegistrationResult = vertexLinkClient.registerEdgeNode(nodeId, "localhost", LOCAL_GRPC_PORT);
+        NodeRegistrationResult nodeRegistrationResult = centralServerClient.registerEdgeNode(nodeId, "localhost", LOCAL_GRPC_PORT);
         if (!nodeRegistrationResult.success()) {
             throw new IllegalStateException("Failed to register the node with id " + nodeId);
         }
@@ -106,7 +106,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
 
     private boolean uploadToRPC(T telemetry) {
         log.info("Uploading '{}' telemetry {}", telemetry.type(), telemetry);
-        boolean uploaded = vertexLinkClient.uploadTelemetry(nodeId, telemetry);
+        boolean uploaded = centralServerClient.uploadTelemetry(nodeId, telemetry);
         if (!uploaded) {
             log.info("Failed to upload '{}' telemetry {}", telemetry.type(), telemetry.id());
             return false;
