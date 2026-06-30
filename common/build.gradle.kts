@@ -34,4 +34,6 @@ dependencies {
 
     api("org.slf4j:slf4j-api:2.0.18")
     api("ch.qos.logback:logback-classic:1.5.36")
+
+    api("com.typesafe:config:1.4.9")
 }
