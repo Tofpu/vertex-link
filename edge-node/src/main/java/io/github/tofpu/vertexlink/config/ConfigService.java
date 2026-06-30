@@ -2,9 +2,11 @@ package io.github.tofpu.vertexlink.config;
 
 import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
+import com.typesafe.config.ConfigValueFactory;
 
 public class ConfigService {
     private static final String ROOT_PATH_NAME = "edge-node";
+    private static final String DELIMITER = ".";
 
     private Config config;
     private final ConfigurationListener configurationListener;
@@ -21,7 +23,18 @@ public class ConfigService {
 
     public void updateConfig(Config newConfig) {
         this.config = verifyValidity(newConfig);
+        incrementConfigVersion();
         this.configurationListener.onConfigurationUpdate(newConfig);
+    }
+
+    private void incrementConfigVersion() {
+        int version = this.config.getInt(withLibraryPath("version"));
+        int updatedVersion = version + 1;
+        this.config = config.withValue(withLibraryPath("version"), ConfigValueFactory.fromAnyRef(updatedVersion));
+    }
+
+    private String withLibraryPath(String path) {
+        return ROOT_PATH_NAME + DELIMITER + path;
     }
 
     public Config config() {
