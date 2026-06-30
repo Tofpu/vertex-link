@@ -13,6 +13,7 @@ public class ConfigService {
 
     public void updateConfig(Config newConfig) {
         this.config = newConfig;
+        this.configurationListener.onConfigurationUpdate(newConfig);
     }
 
     public Config config() {
