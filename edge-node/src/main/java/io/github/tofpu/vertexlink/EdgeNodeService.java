@@ -1,6 +1,7 @@
 package io.github.tofpu.vertexlink;
 
 import com.typesafe.config.Config;
+import io.github.tofpu.vertexlink.config.ConfigLoader;
 import io.github.tofpu.vertexlink.config.ConfigService;
 import io.github.tofpu.vertexlink.config.ConfigurationListener;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
@@ -47,7 +48,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
             SensorDataAdapter<T> sensorDataAdapter,
             SensorDataIngestor<T> sensorDataIngestor,
             TelemetryPoller.Settings telemetryPollerSettings,
-            Config config,
+            ConfigLoader configLoader,
             ConfigurationListener configurationListener
     ) {
         this.nodeId = nodeId;
@@ -63,7 +64,8 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
                 sensorDataIngestor, telemetryPollerSettings // 10 times per sec
         );
 
-        var configService = new ConfigService(config, configurationListener);
+        Config loadedConfig = configLoader.loadConfig();
+        var configService = new ConfigService(loadedConfig, configurationListener);
         this.server = new SimpleServer<>(
                 LOCAL_GRPC_PORT, new EdgeNodeServiceGrpc(configService)
         );

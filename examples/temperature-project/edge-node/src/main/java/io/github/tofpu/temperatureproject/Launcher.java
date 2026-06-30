@@ -23,7 +23,7 @@ public class Launcher {
                 new TemperatureDataAdapter(),
                 new TemperatureSensorDataIngestor(nodeId),
                 new TelemetryPoller.Settings(0),
-                ConfigFactory.load(),
+                ConfigFactory::load,
                 newConfig -> log.info("ConfigListener. new config update: {}", newConfig)
         );
 
