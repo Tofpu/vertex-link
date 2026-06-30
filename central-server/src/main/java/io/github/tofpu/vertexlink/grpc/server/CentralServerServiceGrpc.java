@@ -2,10 +2,14 @@ package io.github.tofpu.vertexlink.grpc.server;
 
 import com.google.protobuf.Empty;
 import io.github.tofpu.vertexlink.Constants;
+import io.github.tofpu.vertexlink.config.serializer.ConfigSerializer;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
 import io.github.tofpu.vertexlink.node.NodeConnectionHandler;
 import io.github.tofpu.vertexlink.node.NodeRegistrationResult;
-import io.github.tofpu.vertexlink.protos.*;
+import io.github.tofpu.vertexlink.protos.ErrorType;
+import io.github.tofpu.vertexlink.protos.NodeRegistrationRequest;
+import io.github.tofpu.vertexlink.protos.NodeRegistrationResponse;
+import io.github.tofpu.vertexlink.protos.TelemetryPayloadData;
 import io.github.tofpu.vertexlink.redis.RedisHandler;
 import io.github.tofpu.vertexlink.telemetry.NodeId;
 import io.github.tofpu.vertexlink.telemetry.TelemetryPayload;
@@ -43,7 +47,10 @@ public class CentralServerServiceGrpc<T extends TelemetryPayload> extends io.git
         NodeRegistrationResult registrationResult = nodeConnectionHandler.validateAndRegisterNode(
                 nodeId,
                 request.getHost(),
-                request.getPort()
+                request.getPort(),
+                ConfigSerializer.serializer().deserialize(
+                        request.getRawConfig()
+                )
         );
 
         NodeRegistrationResponse.Builder responseBuilder = NodeRegistrationResponse.newBuilder()

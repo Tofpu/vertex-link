@@ -1,5 +1,6 @@
 package io.github.tofpu.vertexlink.node;
 
+import com.typesafe.config.Config;
 import io.github.tofpu.vertexlink.grpc.client.EdgeNodeClient;
 import io.github.tofpu.vertexlink.grpc.client.PingResult;
 import io.github.tofpu.vertexlink.node.exception.ClientAlreadyExistsException;
@@ -18,9 +19,10 @@ public class NodeConnectionHandler {
     public NodeRegistrationResult validateAndRegisterNode(
             NodeId nodeId,
             String host,
-            int port
+            int port,
+            Config config
     ) {
-        EdgeNodeClient nodeClient = new EdgeNodeClient(nodeId, host, port);
+        EdgeNodeClient nodeClient = new EdgeNodeClient(nodeId, host, port, config);
         log.info("Pinging edge node {}:{}", host, port);
         PingResult result = nodeClient.ping();
         if (result == PingResult.SUCCESS) {

@@ -2,6 +2,7 @@ package io.github.tofpu.vertexlink.grpc.client;
 
 import com.google.protobuf.ByteString;
 import com.google.protobuf.Empty;
+import com.typesafe.config.Config;
 import io.github.tofpu.vertexlink.config.type.ConfigValueTypeResolver;
 import io.github.tofpu.vertexlink.config.value.ConfigValueConverter;
 import io.github.tofpu.vertexlink.protos.ConfigurationRequest;
@@ -19,8 +20,9 @@ public class EdgeNodeClient extends AbstractClient<
         EdgeNodeServiceBlockingStub,
         EdgeNodeServiceStub> {
     private final NodeId nodeId;
+    private final Config config;
 
-    public EdgeNodeClient(NodeId nodeId, String host, int port) {
+    public EdgeNodeClient(NodeId nodeId, String host, int port, Config config) {
         super(
                 host,
                 port,
@@ -28,6 +30,7 @@ public class EdgeNodeClient extends AbstractClient<
                 EdgeNodeServiceGrpc::newStub
         );
         this.nodeId = nodeId;
+        this.config = config;
     }
 
     public PingResult ping() {
@@ -56,5 +59,9 @@ public class EdgeNodeClient extends AbstractClient<
         } catch (StatusRuntimeException e) {
             super.handleException(e);
         }
+    }
+
+    public Config config() {
+        return config;
     }
 }
