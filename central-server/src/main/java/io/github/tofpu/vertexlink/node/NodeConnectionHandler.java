@@ -20,7 +20,7 @@ public class NodeConnectionHandler {
             String host,
             int port
     ) {
-        EdgeNodeClient nodeClient = new EdgeNodeClient(host, port);
+        EdgeNodeClient nodeClient = new EdgeNodeClient(nodeId, host, port);
         log.info("Pinging edge node {}:{}", host, port);
         PingResult result = nodeClient.ping();
         if (result == PingResult.SUCCESS) {
