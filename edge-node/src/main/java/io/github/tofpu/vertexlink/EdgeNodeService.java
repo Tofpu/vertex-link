@@ -65,7 +65,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
 
         var configService = new ConfigService(config, configurationListener);
         this.server = new SimpleServer<>(
-                LOCAL_GRPC_PORT, new EdgeNodeServiceGrpc()
+                LOCAL_GRPC_PORT, new EdgeNodeServiceGrpc(configService)
         );
     }
 
