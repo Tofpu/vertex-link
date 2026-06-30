@@ -1,6 +1,8 @@
 package io.github.tofpu.vertexlink.grpc.client;
 
 import com.google.protobuf.ByteString;
+import com.typesafe.config.Config;
+import io.github.tofpu.vertexlink.config.serializer.ConfigSerializer;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
 import io.github.tofpu.vertexlink.protos.CentralServerServiceGrpc;
 import io.github.tofpu.vertexlink.protos.NodeRegistrationRequest;
@@ -27,12 +29,13 @@ public class CentralServerClient<T extends TelemetryPayload> extends AbstractCli
         this.grpcDataAdapter = grpcDataAdapter;
     }
 
-    public NodeRegistrationResult registerEdgeNode(UUID nodeId, String host, int port) {
+    public NodeRegistrationResult registerEdgeNode(UUID nodeId, String host, int port, Config config) {
         log.info("Attempting to register this edge node ({}:{}) in the central server", host, port);
         NodeRegistrationRequest request = NodeRegistrationRequest.newBuilder()
                 .setId(ByteString.copyFrom(ConversionUtil.convertUUIDtoBytes(nodeId)))
                 .setHost(host)
                 .setPort(port)
+                .setRawConfig(ConfigSerializer.serializer().serialize(config))
                 .build();
         NodeRegistrationResponse response = blockingStub.registerEdgeNode(request);
         if (!response.getSuccess()) {

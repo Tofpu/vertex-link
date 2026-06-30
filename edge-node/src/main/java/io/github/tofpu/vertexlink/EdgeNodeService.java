@@ -33,6 +33,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(EdgeNodeService.class);
     private static final String MVSTORE_FILE_PATH_IN_STRING = new File("data.db").getAbsolutePath();
     public static final int LOCAL_GRPC_PORT = 5001;
+    public static final String HOST = "localhost";
 
     private final UUID nodeId;
     private final CentralServerClient<T> centralServerClient;
@@ -40,6 +41,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
     private final MVStore mvStore;
     private final TelemetryPoller<T> telemetryPoller;
     private final SimpleServer<EdgeNodeServiceGrpc> server;
+    private final ConfigService configService;
 
     public EdgeNodeService(
             UUID nodeId,
@@ -65,7 +67,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
         );
 
         Config loadedConfig = configLoader.loadConfig();
-        var configService = new ConfigService(loadedConfig, configurationListener);
+        this.configService = new ConfigService(loadedConfig, configurationListener);
         this.server = new SimpleServer<>(
                 LOCAL_GRPC_PORT, new EdgeNodeServiceGrpc(configService)
         );
@@ -88,7 +90,12 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
 
     private void tryToRegisterThisNodeToCentralServer() {
         // todo grab public address of this node
-        NodeRegistrationResult nodeRegistrationResult = centralServerClient.registerEdgeNode(nodeId, "localhost", LOCAL_GRPC_PORT);
+        NodeRegistrationResult nodeRegistrationResult = centralServerClient.registerEdgeNode(
+                nodeId,
+                HOST,
+                LOCAL_GRPC_PORT,
+                configService.config()
+        );
         if (!nodeRegistrationResult.success()) {
             throw new IllegalStateException("Failed to register the node with id " + nodeId);
         }
