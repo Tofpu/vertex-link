@@ -38,10 +38,20 @@ service CentralServerService {
   rpc RegisterEdgeNode(NodeRegistrationRequest) returns (NodeRegistrationResponse) {}
   rpc UploadTelemetry(TelemetryPayloadData) returns (google.protobuf.Empty) {}
 }
+
+message ConfigurationRequest {
+  bytes node_id = 1; // the target recipient
+  string path = 2;
+  ValueType value_type = 3;
+  bytes value = 4;
+}
+
 enum ValueType {
   BOOLEAN = 0;
 }
 
 service EdgeNodeService {
   rpc Ping(google.protobuf.Empty) returns (google.protobuf.Empty) {}
+  // todo i think we'd like to know what happened. did it succeed, or not? and if it failed, for what reason, etc.
+  rpc UpdateConfiguration(ConfigurationRequest) returns (google.protobuf.Empty) {}
 }
