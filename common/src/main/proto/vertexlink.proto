@@ -13,6 +13,7 @@ message NodeRegistrationRequest {
   bytes id = 1; // node's id
   string host = 2; // node's address
   int32 port = 3; // node's port
+  string rawConfig = 4;
 }
 
 message NodeRegistrationResponse {
