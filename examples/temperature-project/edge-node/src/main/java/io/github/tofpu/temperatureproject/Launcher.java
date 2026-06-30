@@ -1,7 +1,7 @@
 package io.github.tofpu.temperatureproject;
 
-import com.typesafe.config.ConfigFactory;
 import io.github.tofpu.vertexlink.EdgeNodeService;
+import io.github.tofpu.vertexlink.config.ConfigLoader;
 import io.github.tofpu.vertexlink.grpc.server.ConnectionSettings;
 import io.github.tofpu.vertexlink.poller.TelemetryPoller;
 import org.slf4j.Logger;
@@ -23,7 +23,7 @@ public class Launcher {
                 new TemperatureDataAdapter(),
                 new TemperatureSensorDataIngestor(nodeId),
                 new TelemetryPoller.Settings(0),
-                ConfigFactory::load,
+                ConfigLoader.loader(),
                 newConfig -> log.info("ConfigListener. new config update: {}", newConfig)
         );
 
