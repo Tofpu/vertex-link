@@ -1,9 +1,12 @@
 package io.github.tofpu.vertexlink;
 
-import io.github.tofpu.vertexlink.grpc.server.ConnectionSettings;
+import com.typesafe.config.Config;
+import io.github.tofpu.vertexlink.config.ConfigService;
+import io.github.tofpu.vertexlink.config.ConfigurationListener;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
-import io.github.tofpu.vertexlink.grpc.client.NodeRegistrationResult;
 import io.github.tofpu.vertexlink.grpc.client.CentralServerClient;
+import io.github.tofpu.vertexlink.grpc.client.NodeRegistrationResult;
+import io.github.tofpu.vertexlink.grpc.server.ConnectionSettings;
 import io.github.tofpu.vertexlink.grpc.server.EdgeNodeServiceGrpc;
 import io.github.tofpu.vertexlink.logging.impl.MVMapSensorDataLogger;
 import io.github.tofpu.vertexlink.logging.impl.MVStoreSensorDataLoggerFactory;
@@ -43,7 +46,9 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
             GrpcDataAdapter<T> grpcDataAdapter,
             SensorDataAdapter<T> sensorDataAdapter,
             SensorDataIngestor<T> sensorDataIngestor,
-            TelemetryPoller.Settings telemetryPollerSettings
+            TelemetryPoller.Settings telemetryPollerSettings,
+            Config config,
+            ConfigurationListener configurationListener
     ) {
         this.nodeId = nodeId;
         this.centralServerClient = new CentralServerClient<>(
@@ -58,6 +63,7 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
                 sensorDataIngestor, telemetryPollerSettings // 10 times per sec
         );
 
+        var configService = new ConfigService(config, configurationListener);
         this.server = new SimpleServer<>(
                 LOCAL_GRPC_PORT, new EdgeNodeServiceGrpc()
         );
