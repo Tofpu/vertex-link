@@ -35,8 +35,23 @@ message TelemetryPayloadData {
   bytes data = 4;
 }
 
+message ConfigurationSynchronizationRequest {
+  bytes node_id = 1;
+  string raw_config = 2;
+}
+
+message ConfigurationSynchronizationResponse {
+  bool success = 1;
+  optional ConfigSyncErrorType error_type = 2;
+}
+
+enum ConfigSyncErrorType {
+  UNFAMILIAR_NODE = 0;
+}
+
 service CentralServerService {
   rpc RegisterEdgeNode(NodeRegistrationRequest) returns (NodeRegistrationResponse) {}
+  rpc SyncConfig(ConfigurationSynchronizationRequest) returns (ConfigurationSynchronizationResponse) {}
   rpc UploadTelemetry(TelemetryPayloadData) returns (google.protobuf.Empty) {}
 }
 
