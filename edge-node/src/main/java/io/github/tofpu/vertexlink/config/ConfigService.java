@@ -28,13 +28,17 @@ public class ConfigService {
     }
 
     private void incrementConfigVersion() {
-        int version = this.config.getInt(withLibraryPath("version"));
+        int version = configVersion();
         int updatedVersion = version + 1;
         this.config = config.withValue(withLibraryPath("version"), ConfigValueFactory.fromAnyRef(updatedVersion));
     }
 
     private String withLibraryPath(String path) {
         return ROOT_PATH_NAME + DELIMITER + path;
+    }
+
+    public int configVersion() {
+        return this.config.getInt(withLibraryPath("version"));
     }
 
     public Config config() {
