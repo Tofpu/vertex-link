@@ -5,7 +5,7 @@ import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 
 public class ConfigService {
-    private static final String ROOT_PATH_NAME = "edge-node";
+    public static final String ROOT_PATH_NAME = "edge-node";
     private static final String DELIMITER = ".";
 
     private Config config;
