@@ -32,14 +32,16 @@ public class CentralServerService<T extends TelemetryPayload> implements Closeab
                 telemetryRegistry
         );
 
+        NodeClientRegistry nodeClientRegistry = new NodeClientRegistry();
         var nodeConnectionHandler = new NodeConnectionHandler(
-                new NodeClientRegistry()
+                nodeClientRegistry
         );
 
         var vertexLinkService = new CentralServerServiceGrpc<>(
                 grpcDataAdapter,
                 redisHandler,
-                nodeConnectionHandler
+                nodeConnectionHandler,
+                nodeClientRegistry
         );
         this.server = new SimpleServer<>(
                 rpcConnectionSettings.port(),
