@@ -20,7 +20,7 @@ public class EdgeNodeClient extends AbstractClient<
         EdgeNodeServiceBlockingStub,
         EdgeNodeServiceStub> {
     private final NodeId nodeId;
-    private final Config config;
+    private Config config;
 
     public EdgeNodeClient(NodeId nodeId, String host, int port, Config config) {
         super(
