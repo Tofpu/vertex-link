@@ -16,4 +16,8 @@ public class NodeClientRegistry {
         }
         clientMap.put(nodeId, client);
     }
+
+    public EdgeNodeClient getClient(final NodeId nodeId) {
+        return clientMap.get(nodeId);
+    }
 }
