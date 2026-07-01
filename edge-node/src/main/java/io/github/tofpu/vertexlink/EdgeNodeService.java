@@ -29,6 +29,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+// todo send config to central server upon connection & after update (for synchronization)
+// todo add versioning support to config (done)
+// todo accept the latest versioning or smth
 public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
     private static final Logger log = LoggerFactory.getLogger(EdgeNodeService.class);
     private static final String MVSTORE_FILE_PATH_IN_STRING = new File("data.db").getAbsolutePath();
@@ -67,7 +70,9 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
         );
 
         Config loadedConfig = configLoader.loadConfig();
-        this.configService = new ConfigService(loadedConfig, configurationListener);
+        this.configService = new ConfigService(loadedConfig, new InternalConfigurationListener(
+                nodeId, centralServerClient, configurationListener
+        ));
         this.server = new SimpleServer<>(
                 LOCAL_GRPC_PORT, new EdgeNodeServiceGrpc(configService)
         );
