@@ -4,6 +4,8 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import com.typesafe.config.ConfigValueFactory;
 
+import java.util.function.Function;
+
 public class ConfigService {
     public static final String ROOT_PATH_NAME = "edge-node";
     private static final String DELIMITER = ".";
@@ -25,6 +27,11 @@ public class ConfigService {
         this.config = verifyValidity(newConfig);
         incrementConfigVersion();
         this.configurationListener.onConfigurationUpdate(newConfig);
+    }
+
+    public void updateConfig(Function<Config, Config> configConsumer) {
+        Config newConfig = configConsumer.apply(config);
+        updateConfig(newConfig);
     }
 
     private void incrementConfigVersion() {
