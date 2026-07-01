@@ -61,6 +61,10 @@ public class EdgeNodeClient extends AbstractClient<
         }
     }
 
+    public void updateConfig(Config newConfig) {
+        this.config = newConfig;
+    }
+
     public Config config() {
         return config;
     }
