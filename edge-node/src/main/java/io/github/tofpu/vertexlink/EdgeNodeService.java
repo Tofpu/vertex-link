@@ -166,4 +166,8 @@ public class EdgeNodeService<T extends TelemetryPayload> implements Closeable {
         log.info("---- DUMP ----");
         MVStoreTool.dump(MVSTORE_FILE_PATH_IN_STRING, false);
     }
+
+    public ConfigService configService() {
+        return configService;
+    }
 }
