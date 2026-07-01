@@ -9,7 +9,8 @@ A local-first synchronization engine written in Java, designed to prototype an i
   - The registration request is validated prior to acceptance by sending a ping request via gRPC to the given edge node to confirm the validity of the provided address (host:port).
 - The transmission of incoming telemetry from edge nodes to the central server.
   - If the connection from the edge node to the central server were severed, the telemetry are written to disk until the connection is reinstated.
-- The transmission of configuration commands between edge nodes and the central server. **(SOON)**
+- The transmission of configuration commands between edge nodes and the central server.
+- The synchronization of central server's configuration with the edge node's configuration during the launch of edge node and config updates.
 
 ## Technology used:
 - `RPC (gRPC)`: facilitates communication between edge nodes and central server.
