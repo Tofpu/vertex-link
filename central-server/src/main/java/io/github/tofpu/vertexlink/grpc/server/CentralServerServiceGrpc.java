@@ -4,12 +4,11 @@ import com.google.protobuf.Empty;
 import io.github.tofpu.vertexlink.Constants;
 import io.github.tofpu.vertexlink.config.serializer.ConfigSerializer;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
+import io.github.tofpu.vertexlink.grpc.client.EdgeNodeClient;
+import io.github.tofpu.vertexlink.node.NodeClientRegistry;
 import io.github.tofpu.vertexlink.node.NodeConnectionHandler;
 import io.github.tofpu.vertexlink.node.NodeRegistrationResult;
-import io.github.tofpu.vertexlink.protos.ErrorType;
-import io.github.tofpu.vertexlink.protos.NodeRegistrationRequest;
-import io.github.tofpu.vertexlink.protos.NodeRegistrationResponse;
-import io.github.tofpu.vertexlink.protos.TelemetryPayloadData;
+import io.github.tofpu.vertexlink.protos.*;
 import io.github.tofpu.vertexlink.redis.RedisHandler;
 import io.github.tofpu.vertexlink.telemetry.NodeId;
 import io.github.tofpu.vertexlink.telemetry.TelemetryPayload;
@@ -33,11 +32,13 @@ public class CentralServerServiceGrpc<T extends TelemetryPayload> extends io.git
     private final StatefulRedisConnection<byte[], byte[]> connection;
 
     private final NodeConnectionHandler nodeConnectionHandler;
+    private final NodeClientRegistry nodeClientRegistry;
 
-    public CentralServerServiceGrpc(GrpcDataAdapter<T> dataAdapter, RedisHandler redisHandler, NodeConnectionHandler nodeConnectionHandler) {
+    public CentralServerServiceGrpc(GrpcDataAdapter<T> dataAdapter, RedisHandler redisHandler, NodeConnectionHandler nodeConnectionHandler, NodeClientRegistry nodeClientRegistry) {
         this.dataAdapter = dataAdapter;
         this.connection = redisHandler.getConnectionAsByteArray();
         this.nodeConnectionHandler = nodeConnectionHandler;
+        this.nodeClientRegistry = nodeClientRegistry;
     }
 
     @Override
@@ -77,6 +78,27 @@ public class CentralServerServiceGrpc<T extends TelemetryPayload> extends io.git
             throw new IllegalStateException("Unknown registration result: " + registrationResult);
         }
         return errorType;
+    }
+
+    @Override
+    public void syncConfig(ConfigurationSynchronizationRequest request, StreamObserver<ConfigurationSynchronizationResponse> responseObserver) {
+        UUID nodeId = resolveToUUID(request.getNodeId().toByteArray());
+        EdgeNodeClient node = nodeClientRegistry.getClient(
+                NodeId.wrap(nodeId)
+        );
+
+        ConfigurationSynchronizationResponse.Builder responseBuilder = ConfigurationSynchronizationResponse.newBuilder();
+        if (node == null) {
+            responseBuilder.setSuccess(false).setErrorType(ConfigSyncErrorType.UNFAMILIAR_NODE);
+        } else {
+            node.updateConfig(
+                    ConfigSerializer.serializer().deserialize(request.getRawConfig())
+            );
+            responseBuilder.setSuccess(true);
+        }
+
+        responseObserver.onNext(responseBuilder.build());
+        responseObserver.onCompleted();
     }
 
     @Override
