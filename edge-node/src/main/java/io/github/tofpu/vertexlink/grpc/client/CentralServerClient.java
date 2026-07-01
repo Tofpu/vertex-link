@@ -4,10 +4,7 @@ import com.google.protobuf.ByteString;
 import com.typesafe.config.Config;
 import io.github.tofpu.vertexlink.config.serializer.ConfigSerializer;
 import io.github.tofpu.vertexlink.grpc.GrpcDataAdapter;
-import io.github.tofpu.vertexlink.protos.CentralServerServiceGrpc;
-import io.github.tofpu.vertexlink.protos.NodeRegistrationRequest;
-import io.github.tofpu.vertexlink.protos.NodeRegistrationResponse;
-import io.github.tofpu.vertexlink.protos.TelemetryPayloadData;
+import io.github.tofpu.vertexlink.protos.*;
 import io.github.tofpu.vertexlink.telemetry.TelemetryPayload;
 import io.github.tofpu.vertexlink.util.ConversionUtil;
 import io.github.tofpu.vertexlink.util.grpc.AbstractClient;
@@ -44,6 +41,21 @@ public class CentralServerClient<T extends TelemetryPayload> extends AbstractCli
         }
         log.info("Successfully registered this node in the central server");
         return NodeRegistrationResult.SUCCESS;
+    }
+
+    public boolean syncConfig(UUID nodeId, Config config) {
+        log.info("Attempting to synchronize central server's configuration with this node's configuration values");
+        ConfigurationSynchronizationRequest request = ConfigurationSynchronizationRequest.newBuilder()
+                .setNodeId(ByteString.copyFrom(ConversionUtil.convertUUIDtoBytes(nodeId)))
+                .setRawConfig(ConfigSerializer.serializer().serialize(config))
+                .build();
+        ConfigurationSynchronizationResponse response = blockingStub.syncConfig(request);
+        if (!response.getSuccess()) {
+            log.info("The central server failed to synchronize with this node's configuration: {}", response.getErrorType());
+            return false;
+        }
+        log.info("Successfully synchronized this node's configuration with the central server");
+        return true;
     }
 
     /**
