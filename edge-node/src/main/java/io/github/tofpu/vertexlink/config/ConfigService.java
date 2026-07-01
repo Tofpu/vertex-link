@@ -16,7 +16,7 @@ public class ConfigService {
         this.configurationListener = configurationListener;
     }
 
-    public Config verifyValidity(Config config) {
+    Config verifyValidity(Config config) {
         config.checkValid(ConfigFactory.defaultReference(), ROOT_PATH_NAME);
         return config;
     }
